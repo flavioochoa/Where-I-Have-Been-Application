@@ -1,8 +1,8 @@
 import * as AWS from 'aws-sdk'
 
 export const docClient = new AWS.DynamoDB.DocumentClient();
-export const todosTable = process.env.TODOS_TABLE;
-export const bucketName = process.env.TODOS_S3_BUCKET;
+export const todosTable = process.env.WIHBA_TABLE;
+export const bucketName = process.env.WIHBA_S3_BUCKET;
 export const urlExpiration = process.env.SIGNED_URL_EXPIRATION;
 
 export const s3 = new AWS.S3({

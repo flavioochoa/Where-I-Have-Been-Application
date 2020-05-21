@@ -11,7 +11,7 @@ export class TodosAccess {
 
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),
-        private readonly todosTable = process.env.TODOS_TABLE) {
+        private readonly todosTable = process.env.WIHBA_TABLE) {
 
     }
 

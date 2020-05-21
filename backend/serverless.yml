@@ -1,5 +1,5 @@
 service:
-  name: serverless-todo-app
+  name: serverless-wihba
 
 plugins:
   - serverless-webpack
@@ -15,99 +15,99 @@ provider:
   region: ${opt:region, 'us-east-1'}
 
   environment:
-    TODOS_TABLE: TodosTable-${self:provider.stage}-2
-    TODOS_INDEX_NAME: TodosIdIndex
-    TODOS_S3_BUCKET: serverless-todos-flavioochoa-images-${self:provider.stage}
+    WIHBA_TABLE: wihba-table-${self:provider.stage}
+    WIHBA_INDEX_NAME: wihbaIdIndex
+    WIHBA_S3_BUCKET: serverless-wihba-flavioochoa-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 3000
 
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:Query
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_INDEX_NAME}
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}/index/${self:provider.environment.WIHBA_INDEX_NAME}
 
 custom:
-  topicName: todosImagesTopic-${self:provider.stage}
+  topicName: wihbaImagesTopic-${self:provider.stage}
   documentation:
     api:
       info:
         version: v1.0.0
-        title: TODO API
-        description: Serverless application for TODO
+        title: WIHBA API
+        description: Serverless application for Where I Have Been Applicatop? (wihba)
     models:
-      - name: TodoItem
+      - name: WihbaItem
         contentType: application/json
-        schema: ${file(models/create-todo-request.json)}
-      - name: TodoUpdatedItem
+        schema: ${file(models/create-wihba-request.json)}
+      - name: WihbaUpdatedItem
         contentType: application/json
-        schema: ${file(models/update-todo-request.json)}
+        schema: ${file(models/update-wihba-request.json)}
 
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
 
-  GetTodos:
-    handler: src/lambda/http/getTodos.handler
+  GetWihbas:
+    handler: src/lambda/http/getWihbas.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}
     events:
       - http:
           method: get
-          path: todos
+          path: wihba
           cors: true
 
-  CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+  CreateWihba:
+    handler: src/lambda/http/createWihba.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}
     events:
       - http:
           method: post
-          path: todos
+          path: wihba
           cors: true
           reqValidatorName: RequestBodyValidator
           documentation:
-            summary: Create a new TODO
-            description: Create a new TODO
+            summary: Create a new WIHBA
+            description: Create a new WIHBA
             requestModels:
-              'application/json': TodoItem
+              'application/json': WihbaItem
 
-  UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+  UpdateWihba:
+    handler: src/lambda/http/updateWihba.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}
     events:
       - http:
           method: patch
-          path: todos/{todoId}
+          path: wihba/{wihbaId}
           cors: true
           reqValidatorName: RequestBodyValidator
           documentation:
-            summary: Update a TODO item
-            description: Update a TODO item
+            summary: Update a WIHBA item
+            description: Update a WIHBA item
             requestModels:
-              'application/json': TodoUpdatedItem
+              'application/json': WihbaUpdatedItem
 
-  DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+  DeleteWihba:
+    handler: src/lambda/http/deleteWihba.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}
     events:
       - http:
           method: delete
-          path: todos/{todoId}
+          path: wihba/{wihbaId}
           cors: true
 
   GenerateUploadUrl:
@@ -116,15 +116,15 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WIHBA_TABLE}
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: arn:aws:s3:::${self:provider.environment.TODOS_S3_BUCKET}/*
+        Resource: arn:aws:s3:::${self:provider.environment.WIHBA_S3_BUCKET}/*
     events:
       - http:
           method: post
-          path: todos/{todoId}/attachment
+          path: wihba/{wihbaId}/attachment
           cors: true
 
 resources:
@@ -140,23 +140,23 @@ resources:
         RestApiId:
           Ref: ApiGatewayRestApi
 
-    TodosDynamoDBTable:
+    WihbaDynamoDBTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
-          - AttributeName: todoId
+          - AttributeName: wihbaId
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-          - AttributeName: todoId
+          - AttributeName: wihbaId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.WIHBA_TABLE}
         GlobalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.TODOS_INDEX_NAME}
+          - IndexName: ${self:provider.environment.WIHBA_INDEX_NAME}
             KeySchema:
             - AttributeName: userId
               KeyType: HASH
@@ -176,7 +176,7 @@ resources:
       Type: AWS::S3::Bucket
       DependsOn: SNSTopicPolicy
       Properties:
-        BucketName: ${self:provider.environment.TODOS_S3_BUCKET}
+        BucketName: ${self:provider.environment.WIHBA_S3_BUCKET}
         NotificationConfiguration:
           TopicConfigurations:
             - Event: s3:ObjectCreated:Put
@@ -207,7 +207,7 @@ resources:
               Effect: Allow
               Principal: '*'
               Action: 's3:GetObject'
-              Resource: 'arn:aws:s3:::${self:provider.environment.TODOS_S3_BUCKET}/*'
+              Resource: 'arn:aws:s3:::${self:provider.environment.WIHBA_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
     
     SNSTopicPolicy:
@@ -224,7 +224,7 @@ resources:
                 !Ref ImagesTopic
               Condition:
                 ArnLike:
-                  AWS:SourceArn: arn:aws:s3:::${self:provider.environment.TODOS_S3_BUCKET}
+                  AWS:SourceArn: arn:aws:s3:::${self:provider.environment.WIHBA_S3_BUCKET}
         Topics:
           - !Ref ImagesTopic
     

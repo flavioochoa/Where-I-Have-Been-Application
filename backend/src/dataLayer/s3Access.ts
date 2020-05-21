@@ -4,7 +4,7 @@ export class S3Access {
     private readonly s3;
 
     constructor(
-        public readonly bucketName = process.env.TODOS_S3_BUCKET,
+        public readonly bucketName = process.env.WIHBA_S3_BUCKET,
         private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION,
         
     ) {
