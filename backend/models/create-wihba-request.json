@@ -1,18 +1,29 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "todo",
+  "title": "wihba",
   "type": "object",
   "properties": {
-    "name": {
+    "markerName": {
       "type": "string"
     },
-    "dueDate": {
+    "markerText": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "string"
+    },
+    "lng": {
+      "type": "string"
+    },
+    "images": {
       "type": "string"
     }
   },
   "required": [
-    "name",
-    "dueDate"
+    "markerName",
+    "markerText",
+    "lat",
+    "lng"
   ],
-  "additionalProperties": false
+  "additionalProperties": true
 }

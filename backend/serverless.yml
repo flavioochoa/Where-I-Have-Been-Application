@@ -16,7 +16,7 @@ provider:
 
   environment:
     WIHBA_TABLE: wihba-table-${self:provider.stage}
-    WIHBA_INDEX_NAME: wihbaIdIndex
+    WIHBA_INDEX_NAME: placeIdIndex
     WIHBA_S3_BUCKET: serverless-wihba-flavioochoa-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 3000
 
@@ -88,7 +88,7 @@ functions:
     events:
       - http:
           method: patch
-          path: wihba/{wihbaId}
+          path: wihba/{placeId}
           cors: true
           reqValidatorName: RequestBodyValidator
           documentation:
@@ -107,7 +107,7 @@ functions:
     events:
       - http:
           method: delete
-          path: wihba/{wihbaId}
+          path: wihba/{placeId}
           cors: true
 
   GenerateUploadUrl:
@@ -124,7 +124,7 @@ functions:
     events:
       - http:
           method: post
-          path: wihba/{wihbaId}/attachment
+          path: wihba/{placeId}/attachment
           cors: true
 
 resources:
@@ -146,12 +146,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
-          - AttributeName: wihbaId
+          - AttributeName: placeId
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-          - AttributeName: wihbaId
+          - AttributeName: placeId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.WIHBA_TABLE}

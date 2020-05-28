@@ -1,10 +1,10 @@
 import { apiEndpoint } from '../config'
-import { Todo } from '../types/Todo';
-import { CreateTodoRequest } from '../types/CreateTodoRequest';
+import { Place } from '../types/Place';
+import { CreateWihbaRequest } from '../types/CreateWihbaRequest';
 import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 
-export async function getTodos(idToken: string): Promise<Todo[]> {
+export async function getTodos(idToken: string): Promise<Place[]> {
   console.log('Fetching todos')
 
   const response = await Axios.get(`${apiEndpoint}/wihba`, {
@@ -19,8 +19,8 @@ export async function getTodos(idToken: string): Promise<Todo[]> {
 
 export async function createTodo(
   idToken: string,
-  newTodo: CreateTodoRequest
-): Promise<Todo> {
+  newTodo: CreateWihbaRequest
+): Promise<Place> {
   const response = await Axios.post(`${apiEndpoint}/wihba`,  JSON.stringify(newTodo), {
     headers: {
       'Content-Type': 'application/json',

@@ -4,20 +4,20 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-import { TodoItem } from '../models/TodoItem';
-import { TodoUpdate } from '../models/TodoUpdate';
+import { PlaceItem } from '../models/PlaceItem';
+import { PlaceUpdate } from '../models/PlaceUpdate';
 
-export class TodosAccess {
+export class PlacesAccess {
 
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),
-        private readonly todosTable = process.env.WIHBA_TABLE) {
+        private readonly placestable = process.env.WIHBA_TABLE) {
 
     }
 
-    async getTodosPerUser(userId: string): Promise<TodoItem[]> {
+    async getPlacesPerUser(userId: string): Promise<PlaceItem[]> {
         const result = await this.docClient.query({
-            TableName: this.todosTable,
+            TableName: this.placestable,
             KeyConditionExpression: 'userId = :userId',
             ExpressionAttributeValues: {
                 ':userId': userId
@@ -25,36 +25,33 @@ export class TodosAccess {
             ScanIndexForward: false
         }).promise()
 
-        return result.Items as TodoItem[];
+        return result.Items as PlaceItem[];
     }
 
-    async createTodo(item: TodoItem): Promise<TodoItem> {
+    async createPlace(item: PlaceItem): Promise<PlaceItem> {
         await this.docClient.put({
-            TableName: this.todosTable,
+            TableName: this.placestable,
             Item: item
         }).promise();
 
         return item
     }
 
-    async updateTodo(userId: string, todoId: string, todoUpdate: TodoUpdate): Promise<void> {
-        const { name, dueDate, done } = todoUpdate;
+    async updatePlace(userId: string, placeId: string, placeUpdate: PlaceUpdate): Promise<void> {
+        const { markerName, markerText, lng, lat } = placeUpdate;
         const params = {
-            TableName: this.todosTable,
+            TableName: this.placestable,
             Key: {
                 userId,
-                todoId
+                placeId
             },
-            UpdateExpression: 'set #name_value = :nameValue, dueDate=:dueDate, done=:done ',
-            ConditionExpression: 'todoId = :todoId',
+            UpdateExpression: 'set markerName = :markerName, markerText=:markerText, lng=:lng, lat=:lat ',
+            ConditionExpression: 'placeId = :placeId',
             ExpressionAttributeValues: {
-                ':nameValue': name,
-                ':dueDate': dueDate,
-                ':done': done,
-                ':todoId': todoId,
-            },
-            ExpressionAttributeNames: {
-                '#name_value': 'name'
+                ':markerName': markerName,
+                ':markerText': markerText,
+                ':lng': lng,
+                ':lat': lat,
             },
             ReturnValues: 'UPDATED_NEW'
         };
@@ -62,34 +59,34 @@ export class TodosAccess {
         await this.docClient.update(params).promise();
     }
 
-    async deleteTodo(userId: string, todoId: string, ): Promise<void> {
+    async deletePlace(userId: string, placeId: string, ): Promise<void> {
         const params = {
-            TableName: this.todosTable,
+            TableName: this.placestable,
             Key: {
                 userId,
-                todoId
+                placeId
             },
-            ConditionExpression: 'todoId = :todoId',
+            ConditionExpression: 'placeId = :placeId',
             ExpressionAttributeValues: {
-                ':todoId': todoId
+                ':placeId': placeId
             }
         };
 
         await this.docClient.delete(params).promise();
     }
 
-    async updateTodoAttachment(userId: string, todoId: string, attachmentUrl: string): Promise<void> {
+    async updatePlaceImages(userId: string, placeId: string, attachmentUrl: string): Promise<void> {
         const params = {
-            TableName: this.todosTable,
+            TableName: this.placestable,
             Key: {
               userId,
-              todoId
+              placeId
             },
-            UpdateExpression: 'set attachmentUrl = :attachmentUrl',
-            ConditionExpression:'todoId = :todoId',
+            UpdateExpression: 'set images = :images',
+            ConditionExpression:'placeId = :placeId',
             ExpressionAttributeValues: {
-              ':attachmentUrl': attachmentUrl,
-              ':todoId': todoId,
+              ':images': attachmentUrl,
+              ':placeId': placeId,
             },
             ReturnValues: 'UPDATED_NEW'
           };

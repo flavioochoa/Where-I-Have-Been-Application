@@ -7,7 +7,7 @@ Based on [https://github.com/flavioochoa/Serverless-TODO-Application](https://gi
 
 # Functionality of the application
 
-This application will allow creating/removing/updating/fetching places where you have been. Each place item can optionally have multiple attachment image. Each user only has access to the places that he/she has created. Fetched places should appear on Google Map as markers. You can see images taken in the place by clicking on the marker.
+This application will allow creating/removing/updating/fetching places where you have been. Each place item can optionally have an image. Each user only has access to the places that he/she has created. Fetched places should appear on Google Map as markers. You can see images taken in the place by clicking on the marker.
 
 # Implemented functionality
 
@@ -43,6 +43,6 @@ npm install
 sls deploy -v
 ```
 
-# Postman collection
+# Google api key
 
-You can use the Postman collection that contains sample requests to test backend. You can find a Postman collection in this project.
+You should set your google api key in config file. Search for `googleMapsKey`and set value.

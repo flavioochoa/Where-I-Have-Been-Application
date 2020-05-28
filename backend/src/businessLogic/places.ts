@@ -1,47 +1,45 @@
 import * as uuid from 'uuid'
-import { TodoItem } from '../models/TodoItem';
-import { TodosAccess } from '../dataLayer/todosAccess';
-import { CreateTodoRequest } from '../requests/CreateTodoRequest';
+import { PlaceItem } from '../models/PlaceItem';
+import { PlacesAccess } from '../dataLayer/placesAccess';
+import { CreateWihbaRequest } from '../requests/CreateWihbaRequest';
 import { parseUserId } from '../auth/utils';
-import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
+import { UpdatePlaceRequest } from '../requests/UpdatePlaceRequest';
 import { S3Access } from '../dataLayer/s3Access';
 
-const groupAccess = new TodosAccess();
+const groupAccess = new PlacesAccess();
 const s3Access = new S3Access();
 
-export async function getTodosPerUser(jwtToken: string): Promise<TodoItem[]> {
+export async function getPlacesPerUser(jwtToken: string): Promise<PlaceItem[]> {
   const userId = parseUserId(jwtToken);
-  return groupAccess.getTodosPerUser(userId);
+  return groupAccess.getPlacesPerUser(userId);
 }
 
-export async function createTodo(
-  createTodoRequest: CreateTodoRequest,
+export async function createPlace(
+  createWihbaRequest: CreateWihbaRequest,
   jwtToken: string
-): Promise<TodoItem> {
+): Promise<PlaceItem> {
 
-  const todoId = uuid.v4();
+  const placeId = uuid.v4();
   const userId = parseUserId(jwtToken);
   const createdAt = new Date().toISOString();
 
   const item = {
     userId,
-    todoId, 
-    ...createTodoRequest,
+    placeId, 
+    ...createWihbaRequest,
     createdAt,
-    done: false,
-    attachmentUrl: ''
-  };
+  }
 
-  return await groupAccess.createTodo(item);
+  return await groupAccess.createPlace(item);
 }
 
 export async function updateTodo(
     todoId: string,
-    createTodoRequest: UpdateTodoRequest,
+    createTodoRequest: UpdatePlaceRequest,
     jwtToken: string
   ): Promise<void> {
     const userId = parseUserId(jwtToken);
-    await groupAccess.updateTodo(userId, todoId, createTodoRequest);
+    await groupAccess.updatePlace(userId, todoId, createTodoRequest);
 }
 
 export async function deleteTodo(
@@ -49,7 +47,7 @@ export async function deleteTodo(
     jwtToken: string
   ): Promise<void> {
     const userId = parseUserId(jwtToken);
-    await groupAccess.deleteTodo(userId, todoId);
+    await groupAccess.deletePlace(userId, todoId);
 }
 
 export async function updateTodoAttachment(
@@ -61,7 +59,7 @@ export async function updateTodoAttachment(
     const uploadUrl = s3Access.getUploadUrl(imageId);
     const attachmentUrl = `https://${s3Access.bucketName}.s3.amazonaws.com/${imageId}`;
     
-    await groupAccess.updateTodoAttachment(userId, todoId, attachmentUrl);
+    await groupAccess.updatePlaceImages(userId, todoId, attachmentUrl);
     
     return uploadUrl;
 }
