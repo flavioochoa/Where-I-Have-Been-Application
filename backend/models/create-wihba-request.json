@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "wihba",
+  "type": "object",
+  "properties": {
+    "markerName": {
+      "type": "string"
+    },
+    "markerText": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "string"
+    },
+    "lng": {
+      "type": "string"
+    },
+    "images": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "markerName",
+    "markerText",
+    "lat",
+    "lng"
+  ],
+  "additionalProperties": true
+}
